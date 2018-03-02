@@ -1,7 +1,14 @@
+import os
+from dotenv import load_dotenv
+from os.path import join, dirname
 from flask import Flask, jsonify, request
-from src.sms import sms_reply
+from src.Bot import Bot
+
+load_dotenv(join(dirname(__file__), '../.env'))
+shared_secret = os.environ.get("SHARED_SECRET")
 
 app = Flask(__name__)
+bot = Bot(shared_secret)
 
 @app.route('/')
 def root():
@@ -9,4 +16,4 @@ def root():
 
 @app.route('/message', methods=['POST'])
 def message():
-  return sms_reply(request.form)
+  return bot.reply(request.form)

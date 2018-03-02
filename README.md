@@ -12,7 +12,6 @@ Commands
 - `make shell`: Open docker container shell
 - `make stop`: Stop docker container
 - `make clean`: Remove docker container & image
-- `make publish`: Publish to now (depends on npm package now)
 
 > During dev, use `ngrok http 5000` to tunnel webhooks from Twilio to localhost
 

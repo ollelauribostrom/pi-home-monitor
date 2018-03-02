@@ -15,16 +15,19 @@ class Radio:
     self.player.terminate()
     self.playing = False
 
-  def communicate(self, msg):
-    if "is" in msg:
-      return "Radio is {}".format("playing" if self.playing else "not playing")
+  def communicate(self, number, message, response):
+    if "is" in message:
+      response.message("Radio is {}".format("playing" if self.playing else "not playing"))
 
-    elif "start" in msg:
+    elif "start" in message:
       self.start()
-      return 'Radio started'
+      response.message('Radio started')
 
-    elif "stop" in msg:
+    elif "stop" in message:
       self.stop()
-      return 'Radio stopped'
+      response.message('Radio stopped')
 
-    return 'Sure, I can help you with the radio: Start radio, Stop radio, Is radio playing?'
+    else:
+      response.message('Sure, I can help you with the radio: Start radio, Stop radio, Is radio playing?')
+
+    return response

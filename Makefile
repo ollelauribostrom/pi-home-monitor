@@ -30,6 +30,3 @@ stop:
 clean:
 	docker rm -f $$(docker ps -aqf "name=$(CONTAINER_NAME)") || true
 	docker rmi -f $$(docker images $(IMAGE_NAME) -q)
-
-publish:
-	now --docker --public

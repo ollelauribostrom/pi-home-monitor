@@ -18,16 +18,13 @@ class Radio:
   def communicate(self, number, message, response):
     if "is" in message:
       response.message("Radio is {}".format("playing" if self.playing else "not playing"))
-
     elif "start" in message:
       self.start()
       response.message('Radio started')
-
     elif "stop" in message:
       self.stop()
       response.message('Radio stopped')
-
     else:
-      response.message('Sure, I can help you with the radio: Start radio, Stop radio, Is radio playing?')
+      response.message('You can tell me to: "Start the radio", "Stop the radio" or ask me "Is the radio playing?"')
 
     return response

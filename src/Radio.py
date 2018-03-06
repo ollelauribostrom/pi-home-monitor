@@ -4,27 +4,29 @@ class Radio:
   """CLI Radio Player dependent on npm module sverigesradio."""
   
   def __init__(self):
-    self.player = None
-    self.playing = False
+    self.__stream = None
+    self.__playing = False
   
-  def start(self):
-    self.player = subprocess.Popen("sverigesradio")
-    self.playing = True
+  def play(self):
+    self.__stream = subprocess.Popen("sverigesradio")
+    self.__playing = True
 
-  def stop(self):
-    self.player.terminate()
-    self.playing = False
+  def pause(self):
+    self.__stream.terminate()
+    self.__playing = False
+
+  def is_playing(self):
+    return self.__playing
 
   def communicate(self, number, message, response):
     if "is" in message:
-      response.message("Radio is {}".format("playing" if self.playing else "not playing"))
+      response.message("Radio is {}".format("playing" if self.is_playing else "not playing"))
     elif "start" in message:
-      self.start()
+      self.play()
       response.message('Radio started')
     elif "stop" in message:
-      self.stop()
+      self.pause()
       response.message('Radio stopped')
     else:
       response.message('You can tell me to: "Start the radio", "Stop the radio" or ask me "Is the radio playing?"')
-
     return response

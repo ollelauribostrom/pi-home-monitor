@@ -1,32 +1,48 @@
-from src.message_rules import msg_concerns_radio, msg_concerns_camera
+from src.message_rules import msg_concerns_radio, msg_concerns_subscription, msg_concerns_unsubscription
 from twilio.twiml.messaging_response import MessagingResponse
-from src.Radio import Radio
-from src.Camera import Camera
-from src.Log import Log
-from src.Numbers import Numbers
+from twilio.rest import Client
+import threading
 
-class Bot:
+class Bot():
 
-  def __init__(self, shared_secret):
-    self.radio = Radio()
-    self.camera = Camera()
-    self.log = Log()
-    self.numbers = Numbers(shared_secret)
+  def __init__(self, config, numbers, radio):
+    self._config = config
+    self._numbers = numbers
+    self._radio = radio
+    self._client = Client(config['account_sid'], config['auth_token'])
   
   def reply(self, data):
     number = data['From']
     message = data['Body']
-    return str(self.make_response(number, message))
+    return str(self._make_response(number, message))
 
-  def make_response(self, number, message, response):
+  def _make_response(self, number, message):
     response = MessagingResponse()
-    if self.numbers.unauthorized(number):
-      return self.numbers.authorize(number, message, response, self.log)
+    if not self._numbers.is_authorized(number):
+      return self._numbers.authorize(number, message, response)
     elif msg_concerns_radio(message):
-      return self.radio.communicate(number, message.lower(), response)
-    elif msg_concerns_camera(message):
-      return self.camera.communicate(number, message.lower(), response)
+      return self._radio.communicate(number, message.lower(), response)
+    elif msg_concerns_subscription(message):
+      self._numbers.subscribe(number)
+      response.message('You are now reciving notifications from the monitor')
+      return response
+    elif msg_concerns_unsubscription(message):
+      self._numbers.unsubscribe(number)
+      response.message('You will no longer recive notifications from the monitor')
+      return response
     else:
       response.message("What can I help you with?")
       return response
 
+  def send(self, to, text):
+    return self._client.messages.create(
+      to,
+      body = text,
+      from_ = self._config['from']
+    )
+
+  def motion_handler(self, video):
+    token = self._numbers.generate_token()
+    message = "Movements @ {}/video/{}?token={}".format(self._config['base_url'], video, token)
+    for number in self._numbers.get_subscribers():
+      self.send(number, message)

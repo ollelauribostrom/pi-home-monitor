@@ -3,19 +3,22 @@ import cv2
 import imutils
 import time
 from os.path import join, dirname
-from threading import Timer
+import threading
+from src.EventEmitter import EventEmitter
 
-class MotionDetector:
+class MotionDetector(threading.Thread, EventEmitter):
 
   def __init__(self, frame_width = 500):
-    self.observers = []
+    threading.Thread.__init__(self)
+    EventEmitter.__init__(self)
     self.camera = None
     self.buffer = []
     self.movement = False
     self.timer = None
+    self.saving = False
     self.frame_width = frame_width
-    
-  def start(self):
+
+  def run(self):
     if self.camera is None:
       self.camera = cv2.VideoCapture(0)
       time.sleep(1)
@@ -27,7 +30,7 @@ class MotionDetector:
       frame = self.diff(prev_frame)
       if self.movement:
         self.buffer.append(frame)
-      elif self.buffer:
+      elif self.buffer and not self.saving:
         self.save()
       prev_frame = frame
 
@@ -57,24 +60,19 @@ class MotionDetector:
         self.movement = True
         if self.timer:
           self.timer.cancel()
-        self.timer = Timer(5, self.timeout)
+        self.timer = threading.Timer(5, self.timeout)
         self.timer.start()
     return frame
 
   def save(self):
-    filename = '../movements/{}.mp4'.format(str(time.time()))
-    path = join(dirname(__file__), filename)
+    self.saving = True
+    filename = "{}.mp4".format(str(time.time()))
+    path = join(dirname(__file__), '../data/{}'.format(filename))
     fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-    output = cv2.VideoWriter(path, fourcc, 20.0, (500, self.frame_height))
+    output = cv2.VideoWriter(path, fourcc, 30.0, (500, self.frame_height))
     for frame in self.buffer:
       output.write(frame)
     output.release()
     self.buffer = []
-    self.notify(filename)
-
-  def subscribe(self, observer):
-    self.observers.append(observer)
-
-  def notify(self, path):
-    for observer in self.observers:
-      observer(path)
+    self.saving = False
+    self.emit('motion', filename)

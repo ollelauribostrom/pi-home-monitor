@@ -13,7 +13,7 @@ class MotionDetector(threading.Thread, EventEmitter):
     EventEmitter.__init__(self)
     self.camera = None
     self.recording = False
-    self.timer = None
+    self.movement_timeout = None
     self.frame_width = frame_width
     self.fourcc = cv2.VideoWriter_fourcc(*'H264')
     self.fps = 20.0
@@ -57,17 +57,17 @@ class MotionDetector(threading.Thread, EventEmitter):
     self.outname = "{}.mp4".format(str(time.time()))
     path = join(dirname(__file__), '../data/{}'.format(self.outname))
     self.output = cv2.VideoWriter(path, self.fourcc, self.fps, (self.frame_width, self.frame_height))
-    self.timer = threading.Timer(5, self.out_end)
-    self.timer.start()
+    self.movement_timeout = threading.Timer(5, self.out_end)
+    self.movement_timeout.start()
 
   def out_write(self, frame):
     self.output.write(frame)
-    if self.movement and self.timer is not None:
-      self.timer.cancel()
-      self.timer = None
-    elif self.timer is None:
-      self.timer = threading.Timer(10, self.out_end)
-      self.timer.start()
+    if self.movement and self.movement_timeout is not None:
+      self.movement_timeout.cancel()
+      self.movement_timeout = None
+    elif self.movement_timeout is None:
+      self.movement_timeout = threading.Timer(10, self.out_end)
+      self.movement_timeout.start()
 
   def out_end(self):
     self.recording = False

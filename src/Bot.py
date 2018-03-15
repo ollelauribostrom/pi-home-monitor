@@ -1,7 +1,7 @@
-from src.message_rules import msg_concerns_radio, msg_concerns_subscription, msg_concerns_unsubscription
+import threading
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.rest import Client
-import threading
+import src.message_rules as rules
 
 class Bot():
 
@@ -20,13 +20,13 @@ class Bot():
     response = MessagingResponse()
     if not self._numbers.is_authorized(number):
       return self._numbers.authorize(number, message, response)
-    elif msg_concerns_radio(message):
+    elif rules.concerns_radio(message):
       return self._radio.communicate(number, message.lower(), response)
-    elif msg_concerns_subscription(message):
+    elif rules.concerns_subscription(message):
       self._numbers.subscribe(number)
       response.message('Cool, you are now reciving notifications from the monitor')
       return response
-    elif msg_concerns_unsubscription(message):
+    elif rules.concerns_unsubscription(message):
       self._numbers.unsubscribe(number)
       response.message('Ok, you will no longer recive notifications from the monitor')
       return response

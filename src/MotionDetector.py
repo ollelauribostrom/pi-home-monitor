@@ -1,10 +1,10 @@
-import numpy as np
 import cv2
 import imutils
 import time
 from os.path import join, dirname
 import threading
 from src.EventEmitter import EventEmitter
+from src.image_utils import is_movement
 
 class MotionDetector(threading.Thread, EventEmitter):
 
@@ -12,29 +12,39 @@ class MotionDetector(threading.Thread, EventEmitter):
     threading.Thread.__init__(self)
     EventEmitter.__init__(self)
     self.camera = None
-    self.buffer = []
-    self.movement = False
+    self.recording = False
     self.timer = None
-    self.saving = False
     self.frame_width = frame_width
+    self.fourcc = cv2.VideoWriter_fourcc(*'H264')
+    self.fps = 20.0
 
+  def __del__(self):
+    self.stop_camera()
+    if self.output:
+      self.output.release()
+      
   def run(self):
     if self.camera is None:
-      self.camera = cv2.VideoCapture(0)
-      time.sleep(1)
+      self.start_camera()
+    self.detect()
 
+  def detect(self):
     prev_frame = self.capture()
     self.frame_height = prev_frame.shape[0]
-
     while True:
-      frame = self.diff(prev_frame)
-      if self.movement:
-        self.buffer.append(frame)
-      elif self.buffer and not self.saving:
-        self.save()
+      frame = self.capture()
+      self.movement = is_movement(frame, prev_frame)
+      if self.movement and not self.recording:
+        self.out_start()
+      if self.recording:
+        self.out_write(frame)
       prev_frame = frame
 
-  def stop(self):
+  def start_camera(self):
+    self.camera = cv2.VideoCapture(0)
+    time.sleep(1)
+
+  def stop_camera(self):
     if self.camera:
       self.camera.release()
 
@@ -42,37 +52,24 @@ class MotionDetector(threading.Thread, EventEmitter):
     frame = self.camera.read()[1]
     return imutils.resize(frame, width = self.frame_width)
 
-  def smooth(self, frame):
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    return cv2.GaussianBlur(gray, (21, 21), 0)
+  def out_start(self):
+    self.recording = True
+    self.outname = "{}.mp4".format(str(time.time()))
+    path = join(dirname(__file__), '../data/{}'.format(self.outname))
+    self.output = cv2.VideoWriter(path, self.fourcc, self.fps, (self.frame_width, self.frame_height))
+    self.timer = threading.Timer(5, self.out_end)
+    self.timer.start()
 
-  def timeout(self):
-    self.movement = False
+  def out_write(self, frame):
+    self.output.write(frame)
+    if self.movement and self.timer is not None:
+      self.timer.cancel()
+      self.timer = None
+    elif self.timer is None:
+      self.timer = threading.Timer(10, self.out_end)
+      self.timer.start()
 
-  def diff(self, prev_frame):
-    frame = self.capture()
-    delta = cv2.absdiff(self.smooth(prev_frame), self.smooth(frame))
-    threshold = cv2.threshold(delta, 25, 255, cv2.THRESH_BINARY)[1]
-    threshold = cv2.dilate(threshold, None, iterations = 2)
-    contours = cv2.findContours(threshold.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[1]
-    for countour in contours:
-      if cv2.contourArea(countour) > 50:
-        self.movement = True
-        if self.timer:
-          self.timer.cancel()
-        self.timer = threading.Timer(5, self.timeout)
-        self.timer.start()
-    return frame
-
-  def save(self):
-    self.saving = True
-    filename = "{}.mp4".format(str(time.time()))
-    path = join(dirname(__file__), '../data/{}'.format(filename))
-    fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-    output = cv2.VideoWriter(path, fourcc, 30.0, (500, self.frame_height))
-    for frame in self.buffer:
-      output.write(frame)
-    output.release()
-    self.buffer = []
-    self.saving = False
-    self.emit('motion', filename)
+  def out_end(self):
+    self.recording = False
+    self.output.release()
+    self.emit('motion', self.outname)

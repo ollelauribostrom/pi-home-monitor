@@ -3,18 +3,18 @@ from tests.MockResponse import MockResponse
 
 radio = Radio()
 
-def test_start():
-  radio.start()
-  assert radio.playing == True
+def test_play():
+  radio.play()
+  assert radio.is_playing() == True
 
-def test_stop():
-  radio.stop()
-  assert radio.playing == False
+def test_pause():
+  radio.pause()
+  assert radio.is_playing() == False
 
 def test_communicate_start():
   response = radio.communicate('0701234567', 'start radio', MockResponse())
   assert response.msg == 'Radio started'
-  assert radio.playing == True
+  assert radio.is_playing() == True
 
 def test_communicate_status_playing():
   response = radio.communicate('0701234567', 'is radio playing', MockResponse())
@@ -23,9 +23,9 @@ def test_communicate_status_playing():
 def test_communicate_stop():
   response = radio.communicate('0701234567', 'stop radio', MockResponse())
   assert response.msg == 'Radio stopped'
-  assert radio.playing == False
+  assert radio.is_playing() == False
 
-def test_communicate_status_playing():
+def test_communicate_status_playing_again():
   response = radio.communicate('0701234567', 'is radio playing', MockResponse())
   assert response.msg == 'Radio is not playing'
 

@@ -7,6 +7,7 @@ from src.NumberService import NumberService
 from src.MotionDetector import MotionDetector
 from src.config import config
 
+# Create instances
 app = Flask(__name__)
 log = Log()
 numbers = NumberService(config, log)
@@ -14,6 +15,7 @@ radio = Radio()
 bot = Bot(config, numbers, radio)
 monitor = MotionDetector()
 
+## Start monitor and subscribe to motion events
 monitor.start()
 monitor.listen('motion', bot.motion_handler)
 
@@ -25,10 +27,10 @@ def root():
 def message():
   return bot.reply(request.form)
 
-@app.route('/video/<name>', methods=['GET'])
-def video(name):
+@app.route('/video/<filename>', methods=['GET'])
+def video(filename):
   token = request.args.get('token')
   if numbers.is_valid_token(token):
-    return send_file(join(dirname(__file__), '../data/{}'.format(name)))
+    return send_file(join(dirname(__file__), '../data/{}'.format(filename)))
   else:
     abort(401)

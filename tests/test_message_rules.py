@@ -1,15 +1,25 @@
-from src.message_rules import msg_concerns_radio, msg_concerns_camera
+from src import message_rules as rules
 
 def test_concerns_radio():
-  assert msg_concerns_radio("start radio") == True
-  assert msg_concerns_radio("start RADIO something something") == True
-  assert msg_concerns_radio("something something") == False
+  assert rules.concerns_radio('start radio') == True
+  assert rules.concerns_radio('start RADIO something something') == True
+  assert rules.concerns_radio('something something') == False
 
-def test_concerns_camera():
-  assert msg_concerns_camera("please notify me") == True
-  assert msg_concerns_camera("stop notifying me") == True
-  assert msg_concerns_camera("send me notifications") == True
-  assert msg_concerns_camera("send me a picture of ..") == True
-  assert msg_concerns_camera("send me a PIC of") == True
-  assert msg_concerns_camera("send me a image of") == True
-  assert msg_concerns_camera("something something") == False
+def test_includes_subscription():
+  assert rules.includes_subscription('start Subscription') == True
+  assert rules.includes_subscription('start notifying me') == True
+  assert rules.includes_subscription('track movements') == True
+  assert rules.includes_subscription('something something') == False
+
+def test_concerns_subscription():
+  assert rules.concerns_subscription('start notifying me') == True
+  assert rules.concerns_subscription('subscribe to notifications') == True
+  assert rules.concerns_subscription('notify me on movements') == True
+  assert rules.concerns_subscription('stop notifying me') == False
+
+def test_concerns_unsubscription():
+  assert rules.concerns_unsubscription('stop notifying me') == True
+  assert rules.concerns_unsubscription('end subscription') == True
+  assert rules.concerns_unsubscription('unsubscribe from notifications') == True
+  assert rules.concerns_unsubscription('start notifying me') == False
+

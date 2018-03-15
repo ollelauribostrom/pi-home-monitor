@@ -41,14 +41,14 @@ class NumberService:
       pass
     elif message == self._shared_secret:
       self._authorized_numbers.append(number)
-      response.message("Great, your number is now on the list of authorized numbers")
+      response.message('Great, your number is now on the list of authorized numbers')
     elif self._log.latest(number) == self._log.Failed_Authorization:
       self._banned_numbers.append(number)
-      response.message("Sorry, your number is now banned")
+      response.message('Sorry, your number is now banned')
     elif self._log.latest(number) == self._log.Need_Authorization:
       self._log.add(self._log.Failed_Authorization, number)
-      response.message("Wrong secret. You get one more chance. What is the secret?")
+      response.message('Wrong secret. You get one more chance. What is the secret?')
     else:
       self._log.add(self._log.Need_Authorization, number)
-      response.message("Your number is not on the list of authorized numbers. Do you know the secret?")
+      response.message('Your number is not on the list of authorized numbers. Do you know the secret?')
     return response

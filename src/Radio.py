@@ -8,7 +8,7 @@ class Radio:
     self.__playing = False
   
   def play(self):
-    self.__stream = subprocess.Popen("sverigesradio")
+    self.__stream = subprocess.Popen('sverigesradio')
     self.__playing = True
 
   def pause(self):
@@ -19,12 +19,12 @@ class Radio:
     return self.__playing
 
   def communicate(self, number, message, response):
-    if "is" in message:
-      response.message("Radio is {}".format("playing" if self.is_playing else "not playing"))
-    elif "start" in message:
+    if 'is' in message or 'status' in message:
+      response.message('Radio is {}'.format('playing' if self.is_playing() else 'not playing'))
+    elif 'start' in message or 'play' in message:
       self.play()
       response.message('Radio started')
-    elif "stop" in message:
+    elif 'stop' in message or 'pause' in message:
       self.pause()
       response.message('Radio stopped')
     else:

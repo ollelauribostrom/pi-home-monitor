@@ -24,14 +24,15 @@ class Bot():
       return self._radio.communicate(number, message.lower(), response)
     elif msg_concerns_subscription(message):
       self._numbers.subscribe(number)
-      response.message('You are now reciving notifications from the monitor')
+      response.message('Cool, you are now reciving notifications from the monitor')
       return response
     elif msg_concerns_unsubscription(message):
       self._numbers.unsubscribe(number)
-      response.message('You will no longer recive notifications from the monitor')
+      response.message('Ok, you will no longer recive notifications from the monitor')
       return response
     else:
-      response.message("What can I help you with?")
+      reply = 'Sorry, i did not understand "{}". What can I help you with?'.format(message)
+      response.message(reply)
       return response
 
   def send(self, to, text):
@@ -43,6 +44,6 @@ class Bot():
 
   def motion_handler(self, video):
     token = self._numbers.generate_token()
-    message = "Movements @ {}/video/{}?token={}".format(self._config['base_url'], video, token)
+    message = 'Movements @ {}/video/{}?token={}'.format(self._config['base_url'], video, token)
     for number in self._numbers.get_subscribers():
       self.send(number, message)

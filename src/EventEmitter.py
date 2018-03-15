@@ -1,16 +1,16 @@
 class EventEmitter:
   
   def __init__(self):
-    self.listeners = []
+    self._listeners = []
 
   def listen(self, event, handler):
-    if handler not in self.listeners:
-      self.listeners.append({
-        "event": event,
-        "handler": handler
+    if handler not in self._listeners:
+      self._listeners.append({
+        'event': event,
+        'handler': handler
       })
 
   def emit(self, event, data):
-    for handler in self.listeners:
+    for handler in self._listeners:
       if handler['event'] == event:
         handler['handler'](data)

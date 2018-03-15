@@ -10,6 +10,6 @@ def is_movement(frame_a, frame_b):
   threshold = cv2.dilate(threshold, None, iterations = 2)
   contours = cv2.findContours(threshold.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[1]
   for countour in contours:
-    if cv2.contourArea(countour) > 100:
+    if cv2.contourArea(countour) > 50:
       return True
   return False

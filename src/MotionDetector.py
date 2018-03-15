@@ -2,6 +2,7 @@ import cv2
 import imutils
 import time
 from os.path import join, dirname
+import os
 import threading
 from src.EventEmitter import EventEmitter
 from src.image_utils import is_movement
@@ -26,6 +27,9 @@ class MotionDetector(threading.Thread, EventEmitter):
   def run(self):
     if self.camera is None:
       self.start_camera()
+    if not os.path.exists(join(dirname(__file__), '../data')):
+      os.makedirs(join(dirname(__file__), '../data'))
+      
     self.detect()
 
   def detect(self):

@@ -1,10 +1,13 @@
-.PHONY: clean build run stop inspect
+.PHONY: dev production install test build run inspect shell stop clean
 
 IMAGE_NAME = pi-home-monitor-image
 CONTAINER_NAME = pi-home-monitor-container
 
 dev: 
 	FLASK_APP=src/app.py FLASK_DEBUG=1 flask run
+
+production:
+	FLASK_APP=src/app.py flask run --host=0.0.0.0 --port=80
 
 install:
 	pip3 install -r requirements.txt

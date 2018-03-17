@@ -83,7 +83,12 @@ Interacting with the monitor
 
 ... intruder is scared off
 
-
+#### List of commands
+- **Start radio**: Start radio / Play radio
+- **Stop radio**: Stop radio / Pause radio
+- **Radio status**: Is radio playing? / Radio status
+- **Subscribe**: Subscribe to notifications / Start notifying me on movements / Notify me on movements
+- **Unsubscribe**: Stop notifying me / End subscription / Unsubscribe from notifications
 
 Todo
 ---------

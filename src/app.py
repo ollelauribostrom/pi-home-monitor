@@ -13,7 +13,7 @@ log = Log()
 numbers = NumberService(config, log)
 radio = Radio()
 bot = Bot(config, numbers, radio)
-monitor = MotionDetector()
+monitor = MotionDetector(config)
 
 ## Start monitor and subscribe to motion events
 monitor.start()

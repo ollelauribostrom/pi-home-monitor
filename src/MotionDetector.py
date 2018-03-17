@@ -9,15 +9,16 @@ from src.image_utils import is_movement
 
 class MotionDetector(threading.Thread, EventEmitter):
 
-  def __init__(self, frame_width = 500):
+  def __init__(self, config):
     threading.Thread.__init__(self)
     EventEmitter.__init__(self)
     self.camera = None
     self.recording = False
     self.movement_timeout = None
-    self.frame_width = frame_width
-    self.fourcc = cv2.VideoWriter_fourcc(*'H264')
-    self.fps = 20.0
+    self.file_format = config['file_format']
+    self.frame_width = config['frame_width']
+    self.fourcc = cv2.VideoWriter_fourcc(*config['fourcc'])
+    self.fps = config['fps']
 
   def __del__(self):
     self.stop_camera()
@@ -58,7 +59,7 @@ class MotionDetector(threading.Thread, EventEmitter):
 
   def out_start(self):
     self.recording = True
-    self.outname = "{}.mp4".format(str(time.time()))
+    self.outname = '{}.{}'.format(str(time.time()), self.file_format)
     path = join(dirname(__file__), '../data/{}'.format(self.outname))
     self.output = cv2.VideoWriter(path, self.fourcc, self.fps, (self.frame_width, self.frame_height))
     self.movement_timeout = threading.Timer(5, self.out_end)

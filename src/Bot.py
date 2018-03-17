@@ -2,6 +2,7 @@ import threading
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.rest import Client
 import src.message_rules as rules
+import src.url_utils as url
 
 class Bot():
 
@@ -44,6 +45,7 @@ class Bot():
 
   def motion_handler(self, video):
     token = self._numbers.generate_token()
-    message = 'Movements @ {}/video/{}?token={}'.format(self._config['base_url'], video, token)
+    base_url = url.format(self._config['base_url'])
+    message = 'Movements @ {}/video/{}?token={}'.format(base_url, video, token)
     for number in self._numbers.get_subscribers():
       self.send(number, message)

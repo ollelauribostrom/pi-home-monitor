@@ -18,7 +18,7 @@ def test_is_authorized_success():
 
 def test_authorize_need_authorization():
   response = numbers.authorize('07012345678', 'wrong_secret', MockResponse())
-  assert response.msg == 'Your number is not on the list of authorized numbers. Do you know the secret?'
+  assert response.msg == 'Hi! Your number is not on the list of authorized numbers. Do you know the secret?'
 
 def test_authorize_failed_authorization_attempt():
   response = numbers.authorize('07012345678', 'wrong_secret', MockResponse())

@@ -1,4 +1,4 @@
-from src import message_rules as rules
+from src.utils import message_rules as rules
 
 def test_concerns_radio():
   assert rules.concerns_radio('start radio') == True

@@ -50,5 +50,5 @@ class NumberService:
       response.message('Wrong secret. You get one more chance. What is the secret?')
     else:
       self._log.add(self._log.Need_Authorization, number)
-      response.message('Your number is not on the list of authorized numbers. Do you know the secret?')
+      response.message('Hi! Your number is not on the list of authorized numbers. Do you know the secret?')
     return response

@@ -8,52 +8,29 @@
 
 Installation
 ------------
-##### Dependencies
-- Python 3
-- Twilio phone number
-- A web camera
-- _optional_ nodejs & npm package [sverigesradio](https://www.npmjs.com/package/sverigesradio) (To play radio)
-- _optional_ ngrok (To tunnel webhooks from Twilio to localhost)
-
-#### Local dev installation
 ```bash
+  # Get yourself a Twilio phone number
+  # Make sure your webcamera is working
+  # Download vlc to your mobile phone (needed due to codec issue)
+  # Make sure you have git installed
+  # Make sure you have python 3 & pip 3 installed
+  # Make sure you have nodejs installed
+  # Make sure you have npm package sverigesradio installed globally
+
   # Clone repo
   git clone https://github.com/ollelauribostrom/pi-home-monitor.git
   cd pi-home-monitor
 
   # Install dependencies
   make install
-
-  # Set up env
-  touch .env
-  echo "TWILIO_ACCOUNT_SID=<YOUR_TWILIO_SID>" >> .env
-  echo "TWILIO_AUTH_TOKEN=<YOUR_TWILIO_TOKEN>" >> .env
-  echo "TWILIO_FROM_NUMBER=<YOUR_TWILIO_NUMER>" >> .env
-  echo "SHARED_SECRET=<A_STRING_USED_AS_PASSWORD>" >> .env
-  echo "BASE_URL=<NGROK_TUNNEL_OR_PUBLIC_ADRESS>" >> .env
+  # or
+  sudo make install
 
   # If using ngrok
   ngrok http 5000
   # Configure Twilio webhook
   # Add ngrok tunnel adress to .env as BASE_URL
 
-  # Run
-  make dev
-```
-
-#### Production on Raspberry PI 3 (Raspbian Jessie)
-- Make sure you have Git installed
-- Make sure you have Python 3 & pip installed
-- Make sure you have nodejs installed
-
-```bash
-  # Clone repo
-  git clone https://github.com/ollelauribostrom/pi-home-monitor.git
-  cd pi-home-monitor
-
-  # Install dependencies
-  make install
-
   # Set up env
   touch .env
   echo "TWILIO_ACCOUNT_SID=<YOUR_TWILIO_SID>" >> .env
@@ -63,7 +40,28 @@ Installation
   echo "BASE_URL=<NGROK_TUNNEL_OR_PUBLIC_ADRESS>" >> .env
 
   # Run
-  make production
+  # Change camera settings in src/config.py
+  make dev 
+  # or
+  sudo make production 
+```
+
+#### Common errors & possible solutions
+```bash
+  # Locale settings error
+  export LC_ALL=C.UTF-8
+  export LANG=C.UTF-8
+
+  # Codec issues / corrupt files
+  apt-get install ffmpeg x264
+  # and/or change codec settings in src/config.py
+
+  # Behind a router
+  # —> forward port 80 @ router to pi ip-adress
+
+  # OpenCV issues
+  # Try installing OpenCV & dependencies from scratch
+  # https://www.pyimagesearch.com/2017/09/04/raspbian-stretch-install-opencv-3-python-on-your-raspberry-pi/
 ```
 
 Interacting with the monitor

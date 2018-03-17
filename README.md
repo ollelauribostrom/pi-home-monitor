@@ -2,6 +2,7 @@
 - Monitor movements with Python, Flask & OpenCV
 - Chat based UI (Talk to the monitor through SMS using Twilio)
 - Subscribe to notifications when the monitor picks up movements
+- Demo @ [youtube](https://youtu.be/GOoGSLm-Ul4)
 
 > Also, scare off intruders by turning on some swedish radio!
 

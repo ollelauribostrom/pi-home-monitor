@@ -11,7 +11,7 @@ config = {
     'auth_token': os.environ.get('TWILIO_AUTH_TOKEN'),
     'shared_secret': os.environ.get('SHARED_SECRET'),
     'base_url': os.environ.get('BASE_URL'),
-    'codec': ['H', '2', '6', '4'],
+    'fourcc': ['H', '2', '6', '4'],
     'fps': 10.0,
     'file_format': 'mkv',
     'frame_width': 500

@@ -1,8 +1,8 @@
 import threading
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.rest import Client
-import src.message_rules as rules
-import src.url_utils as url
+import src.utils.message_rules as rules
+import src.utils.url_utils as url
 
 class Bot():
 

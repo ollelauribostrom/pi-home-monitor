@@ -5,7 +5,7 @@ from os.path import join, dirname
 import os
 import threading
 from src.EventEmitter import EventEmitter
-from src.image_utils import is_movement
+from src.utils.image_utils import is_movement
 
 class MotionDetector(threading.Thread, EventEmitter):
 
